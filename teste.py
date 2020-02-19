@@ -11,8 +11,8 @@ class Sorteador():
     def __init__(self):
         self.naipes = ["ouros","espadas","copas","paus"]
         self.numeros = ["quatro","cinco","seis","sete","dez","onze","doze","um","dois","tres"]
-        self.mao_minha = []
-        self.mao_computador = []
+        self.mao_minha = ["a"]
+        self.mao_computador = ["a"]
         self.carta = None
         self.manilha = None
         self.valor_dos_naipes = [('ouros', 1), ('espadas', 2), ('copas', 3), ('paus', 4)]
@@ -38,20 +38,20 @@ class Sorteador():
                 self.carta = str(self.carta)
                 if not(self.carta in self.mao_computador) and not(self.carta in self.mao_minha):
                     self.mao_computador.append(self.carta)
-        self.manilha = random.choice(self.numeros) + " de " + random.choice(self.naipes)
-        self.manilha = str(self.manilha)
-        print(self.manilha)
-        print("-----------")
-        if not(self.manilha in self.mao_computador) and not(self.manilha in self.mao_minha):
-            self.manilha = self.manilha.split(" ")
-            self.manilha = self.manilha[0]
-            self.manilha = self.valor_das_cartas[self.manilha]
-            if self.manilha == 10:
-                self.manilha = 1
-            elif self.manilha < 10:
-                self.manilha += 1
+        while True:
+            self.manilha = random.choice(self.numeros) + " de " + random.choice(self.naipes)
+            self.manilha = str(self.manilha)
+            if not(self.manilha in self.mao_computador) and not(self.manilha in self.mao_minha):
+                self.manilha = self.manilha.split(" ")
+                self.manilha = self.manilha[0]
+                self.manilha = self.valor_das_cartas[self.manilha]
+                if self.manilha == 10:
+                    self.manilha = 1
+                    break
+                elif self.manilha < 10:
+                    self.manilha += 1
+                    break
         self.manilha = self.valor_das_cartas_reverso[self.manilha]
-
         self.sorteou = False
 
 
@@ -73,6 +73,7 @@ class MyGame(arcade.Window):
         self.ganhador = None
         self.ganhador_primeira_rodada = None
         self.ganhador_segunda_rodada = None
+        self.ganhador_terceira_rodada = None
         self.pontos_jogador = 0
         self.pontos_computador = 0
         
@@ -89,11 +90,17 @@ class MyGame(arcade.Window):
         if self.sorteou == False:
             self.sortear.sortear()
             self.sorteou = True
+        print("O ganhador da primeira rodada é o : ", self.ganhador_primeira_rodada)
+        print("O ganhador da segunda rodada é o : ", self.ganhador_segunda_rodada)
+        print("O ganhador da terceira rodada é o : ", self.ganhador_terceira_rodada)
+        print("A pontuação do jogador é: ", self.pontos_jogador)
+        print("A pontuação do computador é: ", self.pontos_computador)
         print(self.ganhador)
 
     def verificar_ganhador(self):
         self.ganhador_primeira_rodada = None
         self.ganhador_segunda_rodada = None
+        self.ganhador_terceira_rodada = None
         self.ganhador = None
         self.pontos_jogador = 0
         self.pontos_computador = 0
@@ -126,19 +133,39 @@ class MyGame(arcade.Window):
                     self.carta_computador = self.sortear.mao_computador[i]
                     print("Sua carta é maior: ", self.minha_carta)
                     if self.ganhador_primeira_rodada == "empachado":
+                        if i == 1:
+                            self.ganhador_segunda_rodada = "jogador"
+                            self.pontos_jogador += 1
+                        elif i == 2:
+                            self.ganhador_terceira_rodada = "jogador"
+                            self.pontos_jogador += 1
                         self.ganhador = "jogador"
                     elif self.ganhador_primeira_rodada != "empachado":
-                        self.pontos_jogador += 1
                         if i == 0:
                             self.ganhador_primeira_rodada = "jogador"
+                        elif i == 1:
+                            self.ganhador_segunda_rodada = "jogador"
+                        elif i == 2:
+                            self.ganhador_terceira_rodada = "jogador"
+                        self.pontos_jogador += 1
                 elif self.escolha_computador > self.minha_escolha:
                     print("A carta do computador é maior: ", self.carta_computador)
                     if self.ganhador_primeira_rodada == "empachado":
+                        if i == 1:
+                            self.ganhador_segunda_rodada = "computador"
+                            self.pontos_computador += 1
+                        elif i == 2:
+                            self.ganhador_terceira_rodada = "computador"
+                            self.pontos_computador += 1
                         self.ganhador = "computador"
                     elif self.ganhador_primeira_rodada != "empachado":
-                        self.pontos_computador += 1
                         if i == 0:
                             self.ganhador_primeira_rodada = "computador"
+                        elif i == 1:
+                            self.ganhador_segunda_rodada = "computador"
+                        elif i == 2:
+                            self.ganhador_terceira_rodada = "computador"
+                        self.pontos_computador += 1
                 elif self.minha_escolha == self.escolha_computador:
                     if (self.minha_escolha == 11 and self.escolha_computador == 11) or (self.ganhador_primeira_rodada == "empachado" and self.ganhador_segunda_rodada == "empachado"):
                         self.minha_carta = self.sortear.mao_minha[i]
@@ -160,9 +187,13 @@ class MyGame(arcade.Window):
                             if self.ganhador_primeira_rodada == "empachado":
                                 self.ganhador = "jogador"
                             elif self.ganhador_primeira_rodada != "empachado":
-                                self.pontos_jogador += 1
                                 if i == 0:
                                     self.ganhador_primeira_rodada = "jogador"
+                                elif i == 1:
+                                    self.ganhador_segunda_rodada = "jogador"
+                                elif i == 2:
+                                    self.ganhador_terceira_rodada = "jogador"
+                                self.pontos_jogador += 1
                         elif self.escolha_computador > self.minha_escolha:
                             print("A carta do computador é maior: ", self.carta_computador)
                             if self.ganhador_primeira_rodada == "empachado":
@@ -171,13 +202,29 @@ class MyGame(arcade.Window):
                                 self.pontos_computador += 1
                                 if i == 0:
                                     self.ganhador_primeira_rodada = "computador"
+                                elif i == 1:
+                                    self.ganhador_segunda_rodada = "computador"
+                                elif i == 2:
+                                    self.ganhador_terceira_rodada = "computador"
                     elif self.minha_escolha != 11 and self.escolha_computador != 11:
                         if i == 0:
                             print("Empachou!")
                             self.ganhador_primeira_rodada = "empachado"
-                        if i == 1:
+                        elif i == 1:
                             print("Empachou!")
                             self.ganhador_segunda_rodada = "empachado"
+                        elif i == 2:
+                            print("Empachou!")
+                            self.ganhador_terceira_rodada = "empachado"
+                            if self.ganhador_primeira_rodada == "jogador":
+                                self.ganhador = "jogador"
+                            elif self.ganhador_primeira_rodada == "computador":
+                                self.ganhador = "computador"
+
+            if self.pontos_computador == 2:
+                self.ganhador = "computador"
+            elif self.pontos_jogador == 2:
+                self.ganhador = "jogador"
         
 
     def on_key_press(self, key, modifiers):
