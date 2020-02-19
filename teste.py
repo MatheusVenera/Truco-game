@@ -70,6 +70,11 @@ class MyGame(arcade.Window):
         self.valor_das_cartas = dict(self.valor_das_cartas)
         self.minha_carta = None
         self.carta_computador = None
+        self.ganhador = None
+        self.ganhador_primeira_rodada = None
+        self.ganhador_segunda_rodada = None
+        self.pontos_jogador = 0
+        self.pontos_computador = 0
         
     def on_draw(self):
         arcade.start_render()
@@ -84,61 +89,102 @@ class MyGame(arcade.Window):
         if self.sorteou == False:
             self.sortear.sortear()
             self.sorteou = True
+        print(self.ganhador)
 
-    def verificar_maior(self):
+    def verificar_ganhador(self):
+        self.ganhador_primeira_rodada = None
+        self.ganhador_segunda_rodada = None
+        self.ganhador = None
+        self.pontos_jogador = 0
+        self.pontos_computador = 0
         for i in range(len(self.sortear.mao_minha)):
-            self.minha_carta = self.sortear.mao_minha[i]
-            self.carta_computador = self.sortear.mao_computador[i]
+            if self.pontos_computador == 2:
+                self.ganhador = "computador"
+            elif self.pontos_jogador == 2:
+                self.ganhador = "jogador"
 
-            self.minha_carta = self.minha_carta.split(" ")
-            self.minha_carta = self.minha_carta[0]
-
-            self.carta_computador = self.carta_computador.split(" ")
-            self.carta_computador = self.carta_computador[0]
-
-            if self.sortear.manilha == self.minha_carta:
-                self.minha_escolha = 11
-            elif self.sortear.manilha == self.carta_computador:
-                self.escolha_computador = 11
-            elif self.sortear.manilha != self.minha_carta and self.sortear.manilha != self.carta_computador:
-                self.minha_escolha = self.valor_das_cartas[self.minha_carta]
-                self.escolha_computador = self.valor_das_cartas[self.carta_computador]
-
-            if self.minha_escolha > self.escolha_computador:
+            if self.ganhador == None:
                 self.minha_carta = self.sortear.mao_minha[i]
                 self.carta_computador = self.sortear.mao_computador[i]
-                print("Sua carta é maior: ", self.minha_carta)
-            elif self.escolha_computador > self.minha_escolha:
-                print("A carta do computador é maior: ", self.carta_computador)
-            elif self.minha_escolha == self.escolha_computador:
-                if self.minha_escolha == 11 and self.escolha_computador == 11:
+
+                self.minha_carta = self.minha_carta.split(" ")
+                self.minha_carta = self.minha_carta[0]
+
+                self.carta_computador = self.carta_computador.split(" ")
+                self.carta_computador = self.carta_computador[0]
+
+                if self.sortear.manilha == self.minha_carta:
+                    self.minha_escolha = 11
+                if self.sortear.manilha == self.carta_computador:
+                    self.escolha_computador = 11
+                if self.sortear.manilha != self.minha_carta and self.sortear.manilha != self.carta_computador:
+                    self.minha_escolha = self.valor_das_cartas[self.minha_carta]
+                    self.escolha_computador = self.valor_das_cartas[self.carta_computador]
+
+                if self.minha_escolha > self.escolha_computador:
                     self.minha_carta = self.sortear.mao_minha[i]
                     self.carta_computador = self.sortear.mao_computador[i]
-
-                    self.minha_carta = self.minha_carta.split(" ")
-                    self.minha_carta = self.minha_carta[2]
-
-                    self.carta_computador = self.carta_computador.split(" ")
-                    self.carta_computador = self.carta_computador[2]
-
-                    self.minha_escolha = self.valor_dos_naipes[self.minha_carta]
-                    self.escolha_computador = self.valor_dos_naipes[self.carta_computador]
-
-                    if self.minha_escolha > self.escolha_computador:
+                    print("Sua carta é maior: ", self.minha_carta)
+                    if self.ganhador_primeira_rodada == "empachado":
+                        self.ganhador = "jogador"
+                    elif self.ganhador_primeira_rodada != "empachado":
+                        self.pontos_jogador += 1
+                        if i == 0:
+                            self.ganhador_primeira_rodada = "jogador"
+                elif self.escolha_computador > self.minha_escolha:
+                    print("A carta do computador é maior: ", self.carta_computador)
+                    if self.ganhador_primeira_rodada == "empachado":
+                        self.ganhador = "computador"
+                    elif self.ganhador_primeira_rodada != "empachado":
+                        self.pontos_computador += 1
+                        if i == 0:
+                            self.ganhador_primeira_rodada = "computador"
+                elif self.minha_escolha == self.escolha_computador:
+                    if (self.minha_escolha == 11 and self.escolha_computador == 11) or (self.ganhador_primeira_rodada == "empachado" and self.ganhador_segunda_rodada == "empachado"):
                         self.minha_carta = self.sortear.mao_minha[i]
                         self.carta_computador = self.sortear.mao_computador[i]
-                        print("Sua carta é maior: ", self.minha_carta)
-                    elif self.escolha_computador > self.minha_escolha:
-                        print("A carta do computador é maior: ", self.carta_computador)
-                elif self.minha_escolha != 11 and self.escolha_computador != 11:
-                    print("Empachou!")
+
+                        self.minha_carta = self.minha_carta.split(" ")
+                        self.minha_carta = self.minha_carta[2]
+
+                        self.carta_computador = self.carta_computador.split(" ")
+                        self.carta_computador = self.carta_computador[2]
+
+                        self.minha_escolha = self.valor_dos_naipes[self.minha_carta]
+                        self.escolha_computador = self.valor_dos_naipes[self.carta_computador]
+
+                        if self.minha_escolha > self.escolha_computador:
+                            self.minha_carta = self.sortear.mao_minha[i]
+                            self.carta_computador = self.sortear.mao_computador[i]
+                            print("Sua carta é maior: ", self.minha_carta)
+                            if self.ganhador_primeira_rodada == "empachado":
+                                self.ganhador = "jogador"
+                            elif self.ganhador_primeira_rodada != "empachado":
+                                self.pontos_jogador += 1
+                                if i == 0:
+                                    self.ganhador_primeira_rodada = "jogador"
+                        elif self.escolha_computador > self.minha_escolha:
+                            print("A carta do computador é maior: ", self.carta_computador)
+                            if self.ganhador_primeira_rodada == "empachado":
+                                self.ganhador = "computador"
+                            elif self.ganhador_primeira_rodada != "empachado":
+                                self.pontos_computador += 1
+                                if i == 0:
+                                    self.ganhador_primeira_rodada = "computador"
+                    elif self.minha_escolha != 11 and self.escolha_computador != 11:
+                        if i == 0:
+                            print("Empachou!")
+                            self.ganhador_primeira_rodada = "empachado"
+                        if i == 1:
+                            print("Empachou!")
+                            self.ganhador_segunda_rodada = "empachado"
         
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ENTER:
             self.sortear.sortear()
         if key == arcade.key.BACKSPACE:
-            MyGame.verificar_maior(self)
+            MyGame.verificar_ganhador(self)
 
 def main():
     game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
