@@ -1,6 +1,8 @@
 import random
 import arcade
 
+#mama minha pika
+
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Truco"
