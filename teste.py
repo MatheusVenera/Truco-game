@@ -83,20 +83,25 @@ class MyGame(arcade.Window):
         for i in range(3):
             arcade.draw_text(self.sortear.mao_minha[i], posicao_x, 100, arcade.color.WHITE)
             arcade.draw_text(self.sortear.mao_computador[i], posicao_x, 500, arcade.color.RED)
-            arcade.draw_text(self.sortear.manilha, 50, 250, arcade.color.WHITE)
+            arcade.draw_text(self.sortear.manilha, 50, 300, arcade.color.WHITE)
+            arcade.draw_text("a", 550, 50, arcade.color.WHITE)
+            arcade.draw_text("a", 775, 50, arcade.color.WHITE)
+            arcade.draw_text("a", 550, 250, arcade.color.WHITE)
+            arcade.draw_text("a", 775, 250, arcade.color.WHITE)
             posicao_x += 250
 
     def on_update(self, delta_time):
         if self.sorteou == False:
             self.sortear.sortear()
             self.sorteou = True
+        """
         print("O ganhador da primeira rodada é o : ", self.ganhador_primeira_rodada)
         print("O ganhador da segunda rodada é o : ", self.ganhador_segunda_rodada)
         print("O ganhador da terceira rodada é o : ", self.ganhador_terceira_rodada)
         print("A pontuação do jogador é: ", self.pontos_jogador)
         print("A pontuação do computador é: ", self.pontos_computador)
         print(self.ganhador)
-
+        """
     def verificar_ganhador(self):
         self.ganhador_primeira_rodada = None
         self.ganhador_segunda_rodada = None
@@ -232,6 +237,15 @@ class MyGame(arcade.Window):
             self.sortear.sortear()
         if key == arcade.key.BACKSPACE:
             MyGame.verificar_ganhador(self)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            if x > 150 and x < 275 and y > 50 and y < 275:
+                print("a")
+            if x > 300 and x < 525 and y > 50 and y < 275:
+                print("b")
+            if x > 550 and x < 775 and y > 50 and y < 275:
+                print("c")
 
 def main():
     game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
